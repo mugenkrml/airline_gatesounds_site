@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ANA/JAL Gate Sound Player</title>
+    <style>
+        /* --- ページ全体のデザイン --- */
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* スクロールバーを消す */
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+        }
+
+        body {
+            /* ★変更点1: グラデーションを滑らかに & 色をソフトに★ */
+            /* 優しいスカイブルーから、柔らかいコーラルレッドへの滑らかなグラデーションに変更 */
+            background: linear-gradient(to bottom, #a7c7e7, #f7d9d9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- ボタンをまとめるグリッド --- */
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 横に2列 */
+            gap: 15px; /* ボタン間の余白 */
+        }
+
+        /* --- ボタンの共通デザイン --- */
+        .gate-button {
+            padding: 18px 50px;
+            border: none;
+            border-radius: 12px; /* 角丸 */
+            font-size: 1.1em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* 影を少し薄く */
+        }
+        .gate-button:hover {
+            transform: scale(1.05);
+        }
+        .gate-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ★変更点2: ボタンの色もソフトな色合いに変更★ */
+        .ana-btn { background-color: #5b92e5; }
+        .jal-btn { background-color: #e57373; }
+
+    </style>
+</head>
+<body>
+
+    <div class="button-grid">
+        <button id="ana-normal" class="gate-button ana-btn">ANA普通</button>
+        <button id="ana-premium" class="gate-button ana-btn">ANAプレミアム</button>
+        <button id="jal-normal" class="gate-button jal-btn">JAL普通</button>
+        <button id="jal-premium" class="gate-button jal-btn">JALプレミアム</button>
+    </div>
+
+    <script>
+        // --- JavaScript部分は変更ありません ---
+
+        // 1. 4種類の音声ファイルをあらかじめ読み込む
+        const sounds = {
+            anaNormal: new Audio('ana_normal.mp3'),
+            anaPremium: new Audio('ana_premium.mp3'),
+            jalNormal: new Audio('jal_normal.mp3'),
+            jalPremium: new Audio('jal_premium.mp3')
+        };
+
+        // 2. ボタンとプログラムを紐づける
+        document.getElementById('ana-normal').addEventListener('click', () => playSound(sounds.anaNormal));
+        document.getElementById('ana-premium').addEventListener('click', () => playSound(sounds.anaPremium));
+        document.getElementById('jal-normal').addEventListener('click', () => playSound(sounds.jalNormal));
+        document.getElementById('jal-premium').addEventListener('click', () => playSound(sounds.jalPremium));
+
+        // 音を再生するための共通の関数
+        function playSound(sound) {
+            sound.currentTime = 0;
+            sound.play();
+        }
+
+        let mouseY = 0;
+        // 3. マウスカーソルのY座標（上下の位置）を常に記録する
+        window.addEventListener('mousemove', (event) => {
+            mouseY = event.clientY;
+        });
+
+        // 4. キーボードが押されたことを検知する
+        window.addEventListener('keydown', (event) => {
+            if (event.code !== 'Space') {
+                return;
+            }
+            event.preventDefault();
+
+            const isTopHalf = mouseY < window.innerHeight / 2;
+
+            if (isTopHalf) {
+                const randomSound = Math.random() < 0.5 ? sounds.anaNormal : sounds.anaPremium;
+                playSound(randomSound);
+            } else {
+                const randomSound = Math.random() < 0.5 ? sounds.jalNormal : sounds.jalPremium;
+                playSound(randomSound);
+            }
+        });
+
+    </script>
+</body>
+</html>
